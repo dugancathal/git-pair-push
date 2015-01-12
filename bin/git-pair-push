@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby -w
+
+require 'git-pair-push'
+begin
+  Git::Pair::Push::Cli.run(ARGV)
+rescue Git::Pair::Push::BaseError => e
+  $stderr.puts e.message
+end
