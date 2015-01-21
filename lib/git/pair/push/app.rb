@@ -1,17 +1,19 @@
 require 'sinatra/base'
+require_relative 'git_client'
+
 module Git
   module Pair
     module Push
       class App < Sinatra::Base
         enable :sessions
-        set inline_templates: true, environment: :production, bind: '0.0.0.0'
+        set inline_templates: true, environment: :production, bind: '0.0.0.0', git_client: GitClient.new
         get '/' do
           erb :index
         end
 
         post '/push' do
-          session[:output] = `git push #{settings.git_args.join(' ')} 2>&1`
-          sha = `git rev-parse HEAD`.chomp
+          sha = settings.git_client.current_sha
+          session[:output] = settings.git_client.push(settings.git_args.join(' '))
           redirect "/push/#{sha}"
         end
 
